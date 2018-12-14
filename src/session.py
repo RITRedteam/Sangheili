@@ -109,7 +109,12 @@ class SocksSession(StreamRequestHandler):
         """
         self._dst_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # TODO: GET A RANDOM IP RIGHT HERE
-        self._dst_sock.bind((toolbox.get_random_ip(), 0))
+        try:
+            ip = toolbox.get_random_ip()
+            self._dst_sock.bind((ip, 0))
+            print(" => ({})".format(ip))
+        except:
+            pass
         self._dst_sock.connect((self._remote_addr, self._remote_port))
 
     def close(self):
