@@ -1,3 +1,9 @@
+# Author: Micah Martin (knif3)
+# sangheili
+#
+# Serve a SOCKS proxy and assign a random IP address to use for the outbound connection
+#
+
 from socketserver import ThreadingMixIn, TCPServer
 
 from src.session import SocksSession
