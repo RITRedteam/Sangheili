@@ -28,8 +28,8 @@ export HTTPS_PROXY=$http_proxy
 To proxy SSH traffic, make sure you have your environment variables installed.
 
 For a permanant configuration, update your SSH client config with the following lines
-```
-Host *
+```bash
+Host *  # Match all hosts
 # Host 192.168.*.*  # Match certain IPs
     ProxyCommand "ncat -x $SOCKS_SERVER:$SOCKS_PORT %h %p"
 ```
