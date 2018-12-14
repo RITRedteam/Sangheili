@@ -1,3 +1,9 @@
+# Author: Micah Martin (knif3)
+# toolbox.py
+#
+# Get a random IP address to use for the outbound connection
+#
+
 import random
 import socket
 from ipaddress import IPv4Network

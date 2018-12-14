@@ -1,3 +1,9 @@
+# Author: Micah Martin (knif3)
+# session.py
+#
+# Handle an incoming SOCKS proxy request
+#
+
 import struct
 import socket
 import select
