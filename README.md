@@ -1,2 +1,2 @@
-# PacketMonkey
+# Sangheili
 Custom SOCKS proxy for redteam
