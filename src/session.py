@@ -72,10 +72,13 @@ class SocksSession(StreamRequestHandler):
             else:
                 self.close()
             reply = struct.pack("!BBBBIH", ver, 0, 0, atype, bndaddr, bndport)
+            self._src_sock.sendall(reply)
         except Exception as err:
-            print(err)
+            print(":", err)
             reply = struct.pack("!BBBBIH", ver, 5, 0, atype, 0, 0) # Return connection refused
-        self._src_sock.sendall(reply)
+            self._src_sock.sendall(reply)
+            self.close()
+            return False
         return True
     
     def handleSession(self):
@@ -106,7 +109,7 @@ class SocksSession(StreamRequestHandler):
         """
         self._dst_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # TODO: GET A RANDOM IP RIGHT HERE
-        # self._dst_sock.bind((toolbox.get_random_ip(), 0))
+        self._dst_sock.bind((toolbox.get_random_ip(), 0))
         self._dst_sock.connect((self._remote_addr, self._remote_port))
 
     def close(self):

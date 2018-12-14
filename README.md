@@ -1,10 +1,13 @@
 # Sangheili
-Custom SOCKS proxy for redteam
-
+Custom SOCKS proxy for redteam. Each outgoing connection gets a random ip address.
 
 
 ## Setup
+No libraries are needed to run the tool
 
+```
+python3 sangheili.py
+```
 
 
 ## Client Usage
