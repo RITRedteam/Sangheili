@@ -10,7 +10,6 @@ import struct
 from threading import Thread, Event
 
 from . import config
-from .networking import _getIpFromDevice
 
 def isIpTaken(dev, ip):
     '''
