@@ -174,16 +174,17 @@ def execute(args):
 
 def _findHosts():
     # Get all the possible hosts in the network
-    hosts = set([ip.exploded for ip in IPv4Network(config['net_base_ip']+config['net_netmask'], strict=False).hosts()])
+    hosts = [ip.exploded for ip in IPv4Network(config['net_base_ip']+config['net_netmask'], strict=False).hosts()]
+    random.shuffle(hosts)
     count = config.get('address_count', 50)
     addresses = set()
     # Keep looping until we run out of ip addresses or have found enough
-    while hosts and len(addresses) < count:
-        ip = random.choice(hosts)
-        hosts.pop(ip)
+    for ip in hosts:
         if ip not in addresses:
             if not isIpTaken(config['net_device'], ip):
                 addresses.add(ip)
+        if len(addresses) == count:
+            break
     config['net_addresses'] = list(addresses)
         
 
