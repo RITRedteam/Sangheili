@@ -1,0 +1,28 @@
+# Settings for Sangheili
+server: 0.0.0.0
+port: 1080
+
+## Specify the network device that we want to use for all the network commands
+# net_device: eth0
+
+## Sangheili can get the random addresses to use via serveral different methods. The program will try the addresses
+## in the order listed below until one works
+##
+## Method 1 (NOT IMPLEMENTED):
+##     Make a post request to a server (The Ark) to get a list of IPs. Server is specified in 'address_server'
+## Method 2 (NOT IMPLEMENTED):
+##     Pull the IPs from a list specified in 'address_file'
+## Method 3 (NOT IMPLEMENTED):
+##     Specify 'address_list' in this file as an array with the IPs that we are allowed to use
+## Method 4:
+##     When the server is started, search the subnet for 'address_count' (default 50), make sure they aren't in use,
+##     and reserve them
+##
+
+address_count: 50
+
+## Set 'reserve_addresses' to true to add all the virtual ip addresses at the beginning and not dynamically
+reserve_addresses: false
+
+## Validate all of the IP addresses with ARP at the program start
+validate_addresses: false

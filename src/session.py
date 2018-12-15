@@ -9,7 +9,7 @@ import socket
 import select
 from socketserver import StreamRequestHandler
 
-from . import toolbox
+from .networking import new_ip, cleanup_ip
 
 
 # SOCKS Settings
@@ -23,7 +23,7 @@ class SocksSession(StreamRequestHandler):
         self._dst_sock = None
         self._remote_addr = None
         self._remote_port = None
-        self._outbound_ip = toolbox.get_random_ip()
+        self._outbound_ip = new_ip()
         if self.startSession():
             self.handleSession()
 
@@ -130,5 +130,5 @@ class SocksSession(StreamRequestHandler):
         if self._dst_sock:
             self._dst_sock.close()
         if self._outbound_ip:
-            toolbox.delInterface(self._outbound_ip) # Cleanup the extra IP address
+            cleanup_ip(self._outbound_ip) # Cleanup the extra IP address
         self.server.close_request(self.request)
