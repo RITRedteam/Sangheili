@@ -23,6 +23,7 @@ class SocksSession(StreamRequestHandler):
         self._dst_sock = None
         self._remote_addr = None
         self._remote_port = None
+        self._outbound_ip = toolbox.get_random_ip()
         if self.startSession():
             self.handleSession()
 
@@ -116,9 +117,8 @@ class SocksSession(StreamRequestHandler):
         self._dst_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # TODO: GET A RANDOM IP RIGHT HERE
         try:
-            ip = toolbox.get_random_ip()
-            self._dst_sock.bind((ip, 0))
-            print(" => ({})".format(ip))
+            self._dst_sock.bind((self._outbound_ip, 0))
+            print(" => ({})".format(self._outbound_ip))
         except:
             pass
         self._dst_sock.connect((self._remote_addr, self._remote_port))
@@ -129,4 +129,6 @@ class SocksSession(StreamRequestHandler):
             self._src_sock.close()
         if self._dst_sock:
             self._dst_sock.close()
+        if self._outbound_ip:
+            toolbox.delInterface(self._outbound_ip) # Cleanup the extra IP address
         self.server.close_request(self.request)

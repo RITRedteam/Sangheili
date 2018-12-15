@@ -10,7 +10,7 @@ from subprocess import Popen, PIPE
 from ipaddress import IPv4Network
 
 NETMASK = "/24"
-LABEL = "sangheili"
+LABEL = "ark"
 
 def addInterface(ip, dev, label=None):
     '''
@@ -32,11 +32,15 @@ def addInterface(ip, dev, label=None):
     return {'label': label, 'ip': ip}
 
 
-def delInterface(ip, dev):
+def delInterface(ip, dev=None):
     '''
     delete a virtual interface with the specified IP address
     '''
-    res = execute("ip addr del {}/24 dev {}:*".format(ip, dev))
+    if not dev:
+        dev = getInterfaceNameFromIp(ip)
+    else:
+        dev += ":*"
+    res = execute("ip addr del {}/24 dev {}".format(ip, dev))
     if res.get('status', 255) != 0:
         raise Exception("Cannot delete interface: {}".format(
                         res.get('stderr', '')))
