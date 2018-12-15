@@ -64,7 +64,7 @@ def _addVirtualInterface(ip, dev):
         label = "{}:{}{}".format(dev, LABEL, random.randint(1, 1000))
     netmask = config['net_netmask']
     # Add the interface
-    command = "ip addr add {}/{} brd + dev {} label {}"
+    command = "ip addr add {}{} brd + dev {} label {}"
     command = command.format(ip, netmask, dev, label)
     res = execute(command)
     if res.get('status', 255) != 0:
@@ -184,7 +184,7 @@ def _findHosts():
         if ip not in addresses:
             if not isIpTaken(config['net_device'], ip):
                 addresses.add(ip)
-                print(".", end="")
+                print(".", end="", flush=True)
         if len(addresses) == count:
             break
     config['net_addresses'] = list(addresses)
