@@ -174,7 +174,7 @@ def execute(args):
 
 def _findHosts():
     # Get all the possible hosts in the network
-    hosts = set([ip.exploded for ip in IPv4Network(config['net_base_ip']+config['net_device'], strict=False).hosts()])
+    hosts = set([ip.exploded for ip in IPv4Network(config['net_base_ip']+config['net_netmask'], strict=False).hosts()])
     count = config.get('address_count', 50)
     addresses = set()
     # Keep looping until we run out of ip addresses or have found enough
