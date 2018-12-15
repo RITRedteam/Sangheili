@@ -78,6 +78,17 @@ def listen_arp(sock, ip, done, retval):
         counter += 1
 
 
+def _getIpFromDevice(dev):
+    """Get the ip address of a device
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, 25, dev+'\0')
+    sock.connect(("1.1.1.1",1))
+    ip = sock.getsockname()[0]
+    sock.close()
+    return ip
+
+
 def send_arp(device, ip_dst, mac_src=None):
     '''
     Send an ARP request to the given raw socket
@@ -89,14 +100,14 @@ def send_arp(device, ip_dst, mac_src=None):
     Returns:
         bool:   Whether or not the arp packet was sent
     '''
+    # Get the IP address
+    ip_src = _getIpFromDevice(device)
     # Create raw socket
     sock = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.SOCK_RAW)
     # Bind to the interface given
     sock.bind((device, socket.SOCK_RAW))
     if not mac_src:
-        name = sock.getsockname()  # Get the mac from socket (in binary)
-        mac_src = name[4]
-        ip_src = name[0]
+        mac_src = sock.getsockname()[4]  # Get the mac from socket (in binary)
     # Pack everything together into a packet
     FRAME = (
     b'\xFF\xFF\xFF\xFF\xFF\xFF' +           # Broadcast mac
