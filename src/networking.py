@@ -62,7 +62,7 @@ def _addVirtualInterface(ip, dev):
     label = "{}:{}{}".format(dev, LABEL, random.randint(1, 1000))
     while label in _getInterfaceLabels(dev):
         label = "{}:{}{}".format(dev, LABEL, random.randint(1, 1000))
-    netmask = _getSubnetMaskFromIp(ip)
+    netmask = config['net_netmask']
     # Add the interface
     command = "ip addr add {}/{} brd + dev {} label {}"
     command = command.format(ip, netmask, dev, label)
