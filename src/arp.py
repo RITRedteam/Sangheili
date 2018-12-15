@@ -27,7 +27,7 @@ def isIpTaken(dev, ip):
     listener.start()
 
     # Send an arp packet out
-    send_arp(dev, _getIpFromDevice(dev), ip)
+    send_arp(dev, ip)
     # Wait for the thread or kill it
     isdone.wait(timeout=timeout)
     isdone.set()
@@ -36,20 +36,6 @@ def isIpTaken(dev, ip):
         return True
     else:
         return False
-
-
-def _getIpFromDevice(device):
-    '''
-    Given a device name, return the ip for that interface
-    '''
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    addr = socket.inet_ntoa(fcntl.ioctl(
-                                         s.fileno(),
-                                         0x8915,  # SIOCGIFADDR
-                                         struct.pack('256s', device.encode())
-                                         )[20:24])
-    s.close()
-    return addr
 
 
 def listen_arp(sock, ip, done, retval):
@@ -92,7 +78,7 @@ def listen_arp(sock, ip, done, retval):
         counter += 1
 
 
-def send_arp(device, ip_src, ip_dst, mac_src=None):
+def send_arp(device, ip_dst, mac_src=None):
     '''
     Send an ARP request to the given raw socket
     Args:
@@ -108,7 +94,9 @@ def send_arp(device, ip_src, ip_dst, mac_src=None):
     # Bind to the interface given
     sock.bind((device, socket.SOCK_RAW))
     if not mac_src:
-        mac_src = sock.getsockname()[4]  # Get the mac from socket (in binary)
+        name = sock.getsockname()  # Get the mac from socket (in binary)
+        mac_src = name[4]
+        ip_src = name[0]
     # Pack everything together into a packet
     FRAME = (
     b'\xFF\xFF\xFF\xFF\xFF\xFF' +           # Broadcast mac
