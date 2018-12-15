@@ -4,12 +4,11 @@
 # https://github.com/krig/send_arp.py
 # http://dk0d.blogspot.com/2016/07/code-for-sending-arp-request-with-raw.html
 
-import fcntl
+#import fcntl
 import socket
 import struct
 from threading import Thread, Event
 
-from . import config
 
 def isIpTaken(dev, ip):
     '''
@@ -82,7 +81,7 @@ def _getIpFromDevice(dev):
     """Get the ip address of a device
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.setsockopt(socket.SOL_SOCKET, 25, dev+'\0')
+    sock.setsockopt(socket.SOL_SOCKET, 25, (dev+'\0').encode())
     sock.connect(("1.1.1.1",1))
     ip = sock.getsockname()[0]
     sock.close()
@@ -125,3 +124,9 @@ def send_arp(device, ip_dst, mac_src=None):
     )
     sock.send(FRAME)
     sock.close()
+
+
+if __name__ == "__main__":
+    print(isIpTaken("eth0", "192.168.58.100"))
+    print(isIpTaken("eth0", "192.168.58.128"))
+    print(isIpTaken("eth0", "192.168.58.102"))
