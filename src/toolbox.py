@@ -10,7 +10,7 @@ from subprocess import Popen, PIPE
 from ipaddress import IPv4Network
 
 NETMASK = "/24"
-
+LABEL = "sangheili"
 
 def addInterface(ip, dev, label=None):
     '''
@@ -18,9 +18,9 @@ def addInterface(ip, dev, label=None):
     Returns: label - the label of the new interface
     '''
     # Generate a label for the virtual interface
-    label = "{}:ark{}".format(dev, random.randint(1, 1000))
+    label = "{}:{}{}".format(dev, LABEL, random.randint(1, 1000))
     while label in getInterfaceLabels(dev):
-        label = "{}:ark{}".format(dev, random.randint(1, 1000))
+        label = "{}:{}{}".format(dev, LABEL, random.randint(1, 1000))
 
     # Add the interface
     command = "ip addr add {}/24 brd + dev {} label {}"
@@ -73,10 +73,13 @@ def getIp(host="1.1.1.1"):
 def getInterfaceNameFromIp(ip):
     """Given an IP address, return the interface name the is associated with it
     """
-    res = execute("ip addr | grep '{}' -B2 | head -n 1".format(ip))
+    res = execute("ip addr | grep '{}' -B2".format(ip))  # Get three lines of output
     if res.get('status', 255) != 0:
         raise Exception("Cannot find default interface: {}".format(res.get('stderr', '')))
-    return res['stdout'].split()[1].strip(":")
+    dev = res['stdout'].split()[-1].strip()
+    if dev == "dynamic":
+        dev = res['stdout'].split("\n")[0].split()[1].strip(":")
+    return dev
 
 def get_random_ip():
     base_ip = getIp()
