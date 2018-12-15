@@ -33,7 +33,7 @@ def setup_sock(rhost, rport, proxyhost, proxyport=1080, lhost="127.0.0.1", lport
     ver, method = struct.unpack("!BB", data)
     assert ver == SOCKS_VERSION  # Validate server version
     assert method == SOCKS_METHOD  # Validate server method
-    data = struct.pack("!BBBBLH", SOCKS_VERSION, 1, 0, 1, socket.inet_aton(rhost), rport)
+    data = struct.pack("!BBBB", SOCKS_VERSION, 1, 0, 1) + socket.inet_aton(rhost) + struct.pack("!H", rport)
     sock.sendall(data)
     sock.recv(4096)
     loop_socket(sock)
