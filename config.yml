@@ -19,7 +19,7 @@ port: 1080
 ##     and reserve them
 ##
 
-address_count: 50
+address_count: 10
 
 ## Set 'reserve_addresses' to true to add all the virtual ip addresses at the beginning and not dynamically
 reserve_addresses: false
