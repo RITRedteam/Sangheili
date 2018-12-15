@@ -86,7 +86,7 @@ def _delVirtualInterface(ip, dev=None):
     else:
         dev += ":*"
     netmask = _getSubnetMaskFromIp(ip)
-    res = execute("ip addr del {}/{} dev {}".format(ip, netmask, dev))
+    res = execute("ip addr del {}{} dev {}".format(ip, netmask, dev))
     if res.get('status', 255) != 0:
         raise Exception("Cannot delete interface: {}".format(
                         res.get('stderr', '')))
