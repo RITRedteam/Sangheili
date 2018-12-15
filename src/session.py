@@ -92,7 +92,7 @@ class SocksSession(StreamRequestHandler):
         print(" => ('{}', {})".format(self._remote_addr, self._remote_port))
         while True:
             # wait until client or remote is available for read
-            r, w, e = select.select([self._src_sock, self._dst_sock], [], [])
+            r, _, _ = select.select([self._src_sock, self._dst_sock], [], [])
             if self._src_sock in r:
                 data = self._src_sock.recv(4096)
                 if self._dst_sock.send(data) <= 0:

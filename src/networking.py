@@ -4,7 +4,6 @@
 # Get a random IP address to use for the outbound connection
 #
 
-import fcntl
 import random
 import socket
 import struct
@@ -12,7 +11,7 @@ from subprocess import Popen, PIPE
 from ipaddress import IPv4Network
 
 from . import config
-from .arp import isIpTaken
+from .arp import isIpTaken, _getIpFromDevice
 
 LABEL = "ark"  # The label that new IPs are created with
 
@@ -107,7 +106,7 @@ def _getInterfaceLabels(dev):
     try:
         labels = res['stdout'].strip().split()
         return labels
-    except Exception as E:
+    except Exception:
         raise Exception("Cannot get labels: {}".format(res.get('stderr', '')))
 
 
@@ -154,20 +153,6 @@ def _getInterfaceNameFromIp(ip):
     if dev == "dynamic":
         dev = res['stdout'].split("\n")[0].split()[1].strip(":")
     return dev
-
-
-def _getIpFromDevice(device):
-    '''
-    Given a device name, return the ip for that interface
-    '''
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    addr = socket.inet_ntoa(fcntl.ioctl(
-                                         s.fileno(),
-                                         0x8915,  # SIOCGIFADDR
-                                         struct.pack('256s', device.encode())
-                                         )[20:24])
-    s.close()
-    return addr
 
 
 def execute(args):

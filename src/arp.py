@@ -4,7 +4,7 @@
 # https://github.com/krig/send_arp.py
 # http://dk0d.blogspot.com/2016/07/code-for-sending-arp-request-with-raw.html
 
-
+import fcntl
 import socket
 import struct
 from threading import Thread, Event
@@ -39,6 +39,20 @@ def isIpTaken(dev, ip):
         return False
 
 
+def _getIpFromDevice(device):
+    '''
+    Given a device name, return the ip for that interface
+    '''
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    addr = socket.inet_ntoa(fcntl.ioctl(
+                                         s.fileno(),
+                                         0x8915,  # SIOCGIFADDR
+                                         struct.pack('256s', device.encode())
+                                         )[20:24])
+    s.close()
+    return addr
+
+
 def listen_arp(sock, ip, done, retval):
     '''
     Listen for an ARP reply for the specificed amount of time
@@ -58,7 +72,7 @@ def listen_arp(sock, ip, done, retval):
     while not done.is_set():
         try: 
             raw = sock.recvfrom(2048)
-        except Exception as E:
+        except Exception:
             return
         eth_header = raw[0][0:14]
         # Get the ethernet type
@@ -77,8 +91,6 @@ def listen_arp(sock, ip, done, retval):
                     done.set()
                     break
         counter += 1
-
-
 
 
 def send_arp(device, ip_src, ip_dst, mac_src=None):
