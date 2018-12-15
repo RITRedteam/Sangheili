@@ -101,6 +101,8 @@ def send_arp(device, ip_dst, mac_src=None):
     '''
     # Get the IP address
     ip_src = _getIpFromDevice(device)
+    if ip_dst == ip_src:
+        return True
     # Create raw socket
     sock = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.SOCK_RAW)
     # Bind to the interface given
