@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Author: Micah Martin (knif3)
 # sangheili
 #
@@ -17,7 +18,7 @@ class ThreadingTCPServer(ThreadingMixIn, TCPServer):
 def main():
     # Load the config file
     with open("config.yml") as fil:
-        config = yaml.read(fil)
+        config = yaml.load(fil)
     
     # Set up all the networking stuff
     net_init()

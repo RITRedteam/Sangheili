@@ -192,11 +192,11 @@ def _loadHosts():
     Update config['net_addresses'] with the hosts
     """
 
-    if config['address_server']:
+    if config.get('address_server', False):
         raise NotImplementedError("'address_server' is not yet implemented")
-    elif config['address_file']:
+    elif config.get('address_file', False):
         raise NotImplementedError("'address_file' is not yet implemented")
-    elif config['address_list']:
+    elif config.get('address_list', False):
         if not isinstance(config['address_list'], list) or not config['address_list']:
             raise ValueError("If 'address_list' is specified, it must be a (non-empty) list of ip addresses")
         config['net_addresses'] = config['address_list']
@@ -206,6 +206,6 @@ def _loadHosts():
         _findHosts()
 
     # Add all the virtual interfaces
-    if config['reserve_addresses']:
+    if config.get('reserve_addresses', False):
         for ip in config['net_addresses']:
             _addVirtualInterface(ip, config['net_device'])
