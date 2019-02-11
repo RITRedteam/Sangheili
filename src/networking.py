@@ -232,4 +232,7 @@ def _loadHosts():
     # Add all the virtual interfaces
     if config.config.get('reserve_addresses', False):
         for ip in config.config['net_addresses']:
-            _addVirtualInterface(ip, config.config['net_device'])
+            try:
+                _addVirtualInterface(ip, config.config['net_device'])
+            except:
+                pass
