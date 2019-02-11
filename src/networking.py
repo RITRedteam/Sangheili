@@ -197,7 +197,22 @@ def _loadHosts():
     """
 
     if config.config.get('address_server', False):
-        raise NotImplementedError("'address_server' is not yet implemented")
+        #raise NotImplementedError("'address_server' is not yet implemented")
+        from .arkclient import ArkClient, ArkApiError
+        client = ArkClient(config.config.get("address_server"))
+        client.login("admin", "password")
+        try:
+            reg = client.registerHalo("Sangheili", 30)
+        except ArkApiError as E:
+            reg = client.getAddresses("Sangheili")
+        config.config['net_addresses']= reg['addresses']
+        if config.config['net_addresses']:
+            print("Loaded addresses from ArkServer '{}'".format(
+                  config.config.get("address_server")))
+        else:
+            raise ValueError("No addresses could be loaded from {}".format(
+                  config.config.get("address_server")))
+
     elif config.config.get('address_file', False):
         #raise NotImplementedError("'address_file' is not yet implemented")
         with open(config.config.get('address_file')) as fil:
