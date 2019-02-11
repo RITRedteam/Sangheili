@@ -19,12 +19,12 @@ LABEL = "ark"  # The label that new IPs are created with
 def net_init():
     """Set up the networking stuff
     """
-    if 'net_device' in config:
-        config['net_base_ip'] = _getIpFromDevice(config['net_device'])
+    if 'net_device' in config.config:
+        config.config['net_base_ip'] = _getIpFromDevice(config.config['net_device'])
     else:
-        config['net_base_ip'] = _getIp()
-        config['net_device'] = _getInterfaceNameFromIp(config['net_base_ip'])
-    config['net_netmask'] = _getSubnetMaskFromIp(config['net_base_ip'])  # Subnet mask
+        config.config['net_base_ip'] = _getIp()
+        config.config['net_device'] = _getInterfaceNameFromIp(config.config['net_base_ip'])
+    config.config['net_netmask'] = _getSubnetMaskFromIp(config.config['net_base_ip'])  # Subnet mask
 
     _loadHosts()
 
@@ -32,9 +32,9 @@ def net_init():
 def new_ip():
     """Get a new, random IP address to use for outbound connections
     """
-    new_ip = random.choice(config.get('net_addresses'))
-    if not config.get("reserve_addresses", False):
-        _addVirtualInterface(new_ip, config.get('net_device'))
+    new_ip = random.choice(config.config.get('net_addresses'))
+    if not config.config.get("reserve_addresses", False):
+        _addVirtualInterface(new_ip, config.config.get('net_device'))
     return new_ip
 
 
@@ -42,7 +42,7 @@ def cleanup_ip(ip):
     """Signal that we are done with an IP address
     """
     # If we are not just saving all the addresses, then delete it
-    if not config.get("reserve_addresses", False):
+    if not config.config.get("reserve_addresses", False):
         _delVirtualInterface(ip)
 
 
@@ -62,7 +62,7 @@ def _addVirtualInterface(ip, dev):
     label = "{}:{}{}".format(dev, LABEL, random.randint(1, 1000))
     while label in _getInterfaceLabels(dev):
         label = "{}:{}{}".format(dev, LABEL, random.randint(1, 1000))
-    netmask = config['net_netmask']
+    netmask = config.config['net_netmask']
     # Add the interface
     command = "ip addr add {}{} brd + dev {} label {}"
     command = command.format(ip, netmask, dev, label)
@@ -174,42 +174,47 @@ def execute(args):
 
 def _findHosts():
     # Get all the possible hosts in the network
-    hosts = [ip.exploded for ip in IPv4Network(config['net_base_ip']+config['net_netmask'], strict=False).hosts()]
+    hosts = [ip.exploded for ip in IPv4Network(config.config['net_base_ip']+config.config['net_netmask'], strict=False).hosts()]
     random.shuffle(hosts)
-    count = config.get('address_count', 50)
+    count = config.config.get('address_count', 50)
     print("Discovering {} addresses to use...".format(count))
     addresses = set()
     # Keep looping until we run out of ip addresses or have found enough
     for ip in hosts:
         if ip not in addresses:
-            if not isIpTaken(config['net_device'], ip):
+            if not isIpTaken(config.config['net_device'], ip):
                 addresses.add(ip)
                 print(".", end="", flush=True)
         if len(addresses) == count:
             break
-    config['net_addresses'] = list(addresses)
+    config.config['net_addresses'] = list(addresses)
     print(addresses)
         
 
 def _loadHosts():
-    """Figure out which hosts we are allowed to use based on the config.
-    Update config['net_addresses'] with the hosts
+    """Figure out which hosts we are allowed to use based on the config.config.
+    Update config.config['net_addresses'] with the hosts
     """
 
-    if config.get('address_server', False):
+    if config.config.get('address_server', False):
         raise NotImplementedError("'address_server' is not yet implemented")
-    elif config.get('address_file', False):
-        raise NotImplementedError("'address_file' is not yet implemented")
-    elif config.get('address_list', False):
-        if not isinstance(config['address_list'], list) or not config['address_list']:
+    elif config.config.get('address_file', False):
+        #raise NotImplementedError("'address_file' is not yet implemented")
+        with open(config.config.get('address_file')) as fil:
+            config.config['net_addresses'] = [ip.strip() for ip in fil.readlines()]
+    elif config.config.get('address_list', False):
+        if not isinstance(config.config['address_list'], list) or not config.config['address_list']:
             raise ValueError("If 'address_list' is specified, it must be a (non-empty) list of ip addresses")
-        config['net_addresses'] = config['address_list']
-        del config['address_list']
+        config.config['net_addresses'] = config.config['address_list']
+        del config.config['address_list']
     else:
+        # Default to just searching the net for IPs, but warn
+        if not config.config.get('address_count', False):
+            print("WARN: set a method for gathering ip addresses in 'config.yml'")
         # Find the ip addresses that we are allowed to use from the network itself
         _findHosts()
 
     # Add all the virtual interfaces
-    if config.get('reserve_addresses', False):
-        for ip in config['net_addresses']:
-            _addVirtualInterface(ip, config['net_device'])
+    if config.config.get('reserve_addresses', False):
+        for ip in config.config['net_addresses']:
+            _addVirtualInterface(ip, config.config['net_device'])

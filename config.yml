@@ -10,16 +10,24 @@ port: 1080
 ##
 ## Method 1 (NOT IMPLEMENTED):
 ##     Make a post request to a server (The Ark) to get a list of IPs. Server is specified in 'address_server'
-## Method 2 (NOT IMPLEMENTED):
+
+## Method 2:
 ##     Pull the IPs from a list specified in 'address_file'
-## Method 3 (NOT IMPLEMENTED):
+
+# address_file: ips.txt
+
+## Method 3:
 ##     Specify 'address_list' in this file as an array with the IPs that we are allowed to use
+
+# address_list:
+#   - 192.168.58.101
+#   - 192.168.58.102
+
 ## Method 4:
 ##     When the server is started, search the subnet for 'address_count' (default 50), make sure they aren't in use,
 ##     and reserve them
 ##
-
-address_count: 10
+# address_count: 10
 
 ## Set 'reserve_addresses' to true to add all the virtual ip addresses at the beginning and not dynamically
 reserve_addresses: false
