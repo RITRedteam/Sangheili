@@ -235,4 +235,5 @@ def _loadHosts():
             try:
                 _addVirtualInterface(ip, config.config['net_device'])
             except:
+                print("WARN: Address exists:", ip)
                 pass
