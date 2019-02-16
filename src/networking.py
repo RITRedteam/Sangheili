@@ -201,8 +201,9 @@ def _loadHosts():
         from .arkclient import ArkClient, ArkApiError
         client = ArkClient(config.config.get("address_server"))
         client.login("admin", "password")
+        addresses = config.config.get("address_count", 30)
         try:
-            reg = client.registerHalo("Sangheili", 30)
+            reg = client.registerHalo("Sangheili", addresses)
         except ArkApiError as E:
             reg = client.getAddresses("Sangheili")
         config.config['net_addresses']= reg['addresses']
