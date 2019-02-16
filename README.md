@@ -29,9 +29,9 @@ To proxy SSH traffic, make sure you have your environment variables installed.
 
 For a permanant configuration, update your SSH client config with the following lines
 ```bash
-Host *  # Match all hosts
-# Host 192.168.*.*  # Match certain IPs
-    ProxyCommand "ncat -x $SOCKS_SERVER:$SOCKS_PORT %h %p"
+#Host *  # Match all hosts
+Host 10.*.*.*  # Match certain IPs
+    ProxyCommand ncat --proxy $SOCKS_SERVER:$SOCKS_PORT --proxy-type socks5 %h %p
 ```
 Then you may call SSH as normal.
 
