@@ -197,7 +197,23 @@ def _loadHosts():
     """
 
     if config.config.get('address_server', False):
-        raise NotImplementedError("'address_server' is not yet implemented")
+        #raise NotImplementedError("'address_server' is not yet implemented")
+        from .arkclient import ArkClient, ArkApiError
+        client = ArkClient(config.config.get("address_server"))
+        client.login("admin", "password")
+        addresses = config.config.get("address_count", 30)
+        try:
+            reg = client.registerHalo("Sangheili", addresses)
+        except ArkApiError as E:
+            reg = client.getAddresses("Sangheili")
+        config.config['net_addresses']= reg['addresses']
+        if config.config['net_addresses']:
+            print("Loaded addresses from ArkServer '{}'".format(
+                  config.config.get("address_server")))
+        else:
+            raise ValueError("No addresses could be loaded from {}".format(
+                  config.config.get("address_server")))
+
     elif config.config.get('address_file', False):
         #raise NotImplementedError("'address_file' is not yet implemented")
         with open(config.config.get('address_file')) as fil:
@@ -217,4 +233,8 @@ def _loadHosts():
     # Add all the virtual interfaces
     if config.config.get('reserve_addresses', False):
         for ip in config.config['net_addresses']:
-            _addVirtualInterface(ip, config.config['net_device'])
+            try:
+                _addVirtualInterface(ip, config.config['net_device'])
+            except:
+                print("WARN: Address exists:", ip)
+                pass
