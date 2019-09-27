@@ -6,6 +6,7 @@
 
 import random
 import socket
+import os
 import struct
 from subprocess import Popen, PIPE
 from ipaddress import IPv4Network
@@ -200,7 +201,9 @@ def _loadHosts():
         #raise NotImplementedError("'address_server' is not yet implemented")
         from .arkclient import ArkClient, ArkApiError
         client = ArkClient(config.config.get("address_server"))
-        client.login("admin", "password")
+        user = os.environ.get("ARK_USERNAME", "admin")
+        passw = os.environ.get("ARK_PASSWORD", "changeme")
+        client.login(user, passw)
         addresses = config.config.get("address_count", 30)
         try:
             reg = client.registerHalo("Sangheili", addresses)
