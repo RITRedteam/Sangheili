@@ -46,7 +46,7 @@ class SocksSession(StreamRequestHandler):
         data = self._src_sock.recv(nmethods)
         methods = set()
         for b in data:
-            methods.add(data[b])
+            methods.add(b)
         if 0 not in methods:
             self.endSession(0)  # End session with unsupported method
         
